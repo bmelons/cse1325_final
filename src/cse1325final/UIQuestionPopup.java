@@ -1,4 +1,5 @@
 package cse1325final;
+
 import javax.swing.*;
 
 public class UIQuestionPopup {
@@ -10,5 +11,5 @@ public class UIQuestionPopup {
 	private JPanel currentMenu;
 	private JButton loginRegisterButton;
 	private UILoginRegister loginRegister;
-	
+
 }
