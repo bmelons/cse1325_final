@@ -1,8 +1,12 @@
 package cse1325final;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.FlowLayout;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 
 public class Frontend {
 
@@ -13,6 +17,22 @@ public class Frontend {
 		// no differences so i think we're good
 		
 		JFrame frame = makeMainFrame();
+		JMenuBar menuBar = makeMenuBar();
+		frame.setJMenuBar(menuBar);
+		
+		// UI elements
+		JPanel navbarPanel = new UIPlaceholderButtons(4);
+		navbarPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		
+		JPanel actionPanel = new UIPlaceholderButtons(3);
+		navbarPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		
+		UIList list = new UIList(); // TODO: Think about how we want to handle swapping out lists, refresh the existing one or make a new instance?
+		navbarPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		
+		frame.add(navbarPanel,BorderLayout.PAGE_START);
+		frame.add(list, BorderLayout.CENTER);
+		frame.add(actionPanel,BorderLayout.PAGE_END);
 		
 		
 		frame.setVisible(true);
@@ -20,6 +40,7 @@ public class Frontend {
 	
 	private static JFrame makeMainFrame() {
 		// internal helper for readability
+		// very boilerplate
 		
 		// using border layout so we can have sometihng like the following
 	
@@ -35,10 +56,33 @@ public class Frontend {
 		//---------------------------------------------------------
 		
 		JFrame frame = new JFrame("Testing Software");
-		frame.setSize(600,700);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(550,650);
 		frame.setLayout(new BorderLayout(10, 10));
 		
+		// learned you have to do a workaround to give the content a margin between it and the border of the app
+		JPanel content = new JPanel(new BorderLayout());
+        content.setBorder(new EmptyBorder(20, 20, 20, 20));
+        
+		
 		return frame;
+	}
+	
+	private static JMenuBar makeMenuBar() {
+		JMenuBar menuBar = new JMenuBar();
+		
+		JMenu fileMenu = new JMenu("File");
+		
+		// TODO: Implement these buttons
+		JMenuItem af,ae;
+		af = new JMenuItem("A");
+		ae = new JMenuItem("B");
+		fileMenu.add(af);
+		fileMenu.add(ae);
+		
+		menuBar.add(fileMenu);
+		
+		return menuBar;
 	}
 
 }
