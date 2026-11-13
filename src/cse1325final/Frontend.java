@@ -2,6 +2,7 @@ package cse1325final;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 
 import javax.swing.*;
@@ -9,7 +10,6 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
 public class Frontend {
-
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		System.out.println("Intializing"); // makin' sure this method even runs before any real code is written, ->
@@ -57,12 +57,14 @@ public class Frontend {
 		
 		JFrame frame = new JFrame("Testing Software");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(550,650);
-		frame.setLayout(new BorderLayout(10, 10));
+		frame.setSize(660,780);
+		frame.setMinimumSize(new Dimension(550,650));
 		
 		// learned you have to do a workaround to give the content a margin between it and the border of the app
-		JPanel content = new JPanel(new BorderLayout());
-        content.setBorder(new EmptyBorder(20, 20, 20, 20));
+		JPanel content = new JPanel(new BorderLayout(10,10));
+        content.setBorder(new EmptyBorder(10, 20, 10, 20));
+        frame.setLayout(new BorderLayout(10, 10));
+        frame.setContentPane(content);
         
 		
 		return frame;
