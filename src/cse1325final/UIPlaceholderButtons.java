@@ -12,10 +12,15 @@ import java.awt.event.ActionListener;
 import java.util.Random;
 
 public class UIPlaceholderButtons extends JPanel {
+	
+	// i need fake buttons to make sure the ui works right with real buttons  
+	// it lets us think about how the buttons are laid out without them being functional yet, letting us develop asynchronously mostly
+	
+	
 	private static final String[] dummyTexts = {"Action", "An Action", "BTTN", "Too Long Button Text"}; // to see how swing handles different lengths of buttons
 	
-    public UIPlaceholderButtons(int n) { // i need fake buttons to make sure the ui works right with real buttons
-        // flow layout arranges components sequentially in a single horizontal row
+    public UIPlaceholderButtons(int n) { 
+    	// flow layout arranges components sequentially in a single horizontal row
         setLayout(new FlowLayout(FlowLayout.CENTER));
         Random random = new Random();
 

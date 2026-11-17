@@ -3,7 +3,7 @@ package cse1325final;
 public class TestQuestion {
 	private String question = "";
 	private QuestionType questionType;
-	private int answer; // index if question type is multiple-choice, numeric if the question type is
+	private int answer; // is the index of the right answer if question type is multiple-choice, numeric if the question type is
 						// numeric
 	private String options[];
 

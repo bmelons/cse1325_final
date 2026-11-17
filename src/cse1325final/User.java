@@ -3,9 +3,12 @@ package cse1325final;
 public class User {
 	// User info
 	private int id;
+
 	private String firstName;
 	private String lastName;
-	private String username;
+	private String username; 
+	// username is necessary because of people with the same name, 
+	// first, last or both, making searching for it by a single string not practical
 	private String password;
 	private int permissionLevel;
 	// A list of test IDs taken by the user

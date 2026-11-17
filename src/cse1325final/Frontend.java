@@ -11,32 +11,35 @@ import javax.swing.border.EmptyBorder;
 
 public class Frontend {
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		System.out.println("Intializing"); // makin' sure this method even runs before any real code is written, ->
 		// -> reloaded the project freshly cloned into a new workspace, $git diff shows
 		// no differences so i think we're good
 		
+		Backend backend = new Backend();
+
 		JFrame frame = makeMainFrame();
 		JMenuBar menuBar = makeMenuBar();
 		frame.setJMenuBar(menuBar);
 		
+		// SETUP, probably move to a new block if we don't end up needing to keep these variables around
 		// UI elements
 		JPanel navbarPanel = new UIPlaceholderButtons(4);
 		navbarPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
 		JPanel actionPanel = new UIPlaceholderButtons(3);
-		navbarPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		actionPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
 		UIList list = new UIList(); // TODO: Think about how we want to handle swapping out lists, refresh the existing one or make a new instance?
-		navbarPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		list.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
 		frame.add(navbarPanel,BorderLayout.PAGE_START);
 		frame.add(list, BorderLayout.CENTER);
 		frame.add(actionPanel,BorderLayout.PAGE_END);
 		
-		
+
 		frame.setVisible(true);
 	}
+	
 	
 	private static JFrame makeMainFrame() {
 		// internal helper for readability
