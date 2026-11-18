@@ -10,7 +10,7 @@ public class User {
 	// username is necessary because of people with the same name, 
 	// first, last or both, making searching for it by a single string not practical
 	private String password;
-	private int permissionLevel;
+	private PermissionLevel permissionLevel;
 	// A list of test IDs taken by the user
 	private int testsTaken[];
 
@@ -20,7 +20,7 @@ public class User {
 		lastName = last;
 		username = user;
 		password = pass;
-		permissionLevel = 0;
+		permissionLevel = PermissionLevel.NONE;
 	}
 
 	public int getID() {
@@ -67,11 +67,11 @@ public class User {
 		password = pass;
 	}
 
-	public int getPermissionLevel() {
+	public PermissionLevel getPermissionLevel() {
 		return permissionLevel;
 	}
 
-	public void setPermissionLevel(int level) {
+	public void setPermissionLevel(PermissionLevel level) {
 		permissionLevel = level;
 	}
 
