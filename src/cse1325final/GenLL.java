@@ -1,6 +1,7 @@
 package cse1325final;
 
 import java.util.function.Predicate;
+import java.util.ArrayList;
 
 public class GenLL<T> {
 	// private inner node class to encapsulate stored data and next pointer
@@ -92,7 +93,29 @@ public class GenLL<T> {
         return null; // if none is found 
 	}
 
-	
+	public T[] getIterable() {
+		T[] arr = new T[size];
+
+		ListNode cur = head;
+		for (int i = 0; i < size && cur != null; i++) {
+			arr[i] = cur;
+			cur = cur.next;
+		}
+
+		return arr;
+	}
+
+	public T[] getIterableIf(Predicate<T> condition) {
+		ArrayList<T> arr = new ArrayList<T>();
+
+		for (ListNode cur = head; cur != null; cur = cur.next) {
+			if (condition.test(cur.data)) {
+				arr.add(cur.data);
+			}
+		}
+
+		return arr.toArray(new T[0]);
+	}
 
 	public int getSize() {
 		return this.size;

@@ -28,32 +28,48 @@ public class DataManager {
 	}
 	
 	public User getUser(String name) {
-		
-		return UsersLL.search(
-				user -> user.getUsername().equals(name) 
-				);
+		return UsersLL.search(user -> user.getUsername().equals(name));
 	}
 	
 	public User getUser(int id) {
-		return UsersLL.search(
-				user -> user.getID()==id
-				);
+		return UsersLL.search(user -> user.getID() == id);
 	}
 	
 	public Test getTest(String name) {
-		
-		return TestsLL.search(
-				test -> test.getName().equals(name)
-				);
-		
-	}
-	public Test getTest(int id) {
-		//stub
-		return TestsLL.search(
-				test -> test.getId()==id
-				);
+		return TestsLL.search(test -> test.getName().equals(name));
 	}
 
+	public Test getTest(int id) {
+		return TestsLL.search(test -> test.getId() == id);
+	}
+
+	public Test[] getTests() {
+		return TestsLL.getIterable();
+	}
+
+	public Test[] getCompletedTests() {
+		ArrayList<Test> tests = new ArrayList<Test>();
+
+		for (User user : UsersLL.getIterable()) {
+			int[] testIDs = user.getTestsTaken();
+
+			if (testIDs == null) {
+				continue;
+			}
+
+			for (int testID : testIDs) {
+				Test test = getTest(testID);
+				if (test != null) {
+					tests.add(test);
+				}
+			}
+		}
+		return tests.toArray(new Test[0]); 
+	}
+
+	public User[] getUsers() {
+		return UsersLL.getIterable();
+	}
 	
 	//TODO: how do we want to serialize/deserialize?
 	// maybe a static factory inside the user and test classes..? idk at the moment

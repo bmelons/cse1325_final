@@ -7,8 +7,9 @@ NOTE: Add the file(s) you worked on and your name to this list to keep track of 
 | File | Contributor(s) |
 | ---  | --- |
 | `Backend.java` | Andrew Gowan, Great Okunola |
-| `DataManager.java` | Andrew Gowan |
+| `DataManager.java` | Andrew Gowan, Great Okunola |
 | `Frontend.java` | Andrew Gowan |
+| `GenLL.java` | Andrew Gowan, Great Okunola |
 | `Test.java` | Andrew Gowan |
 | `TestQuestion.java` | Great Okunola |
 | `TestRecord.java` | Andrew Gowan |

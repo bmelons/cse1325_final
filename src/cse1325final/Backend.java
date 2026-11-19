@@ -66,7 +66,7 @@ public class Backend {
 			return false;
 		}
 
-		if (password != user.getPassword()) {
+		if (!password.equals(user.getPassword())) {
 			return false;
 		}
 
@@ -154,22 +154,7 @@ public class Backend {
 	}
 
 	public TestRecord[] getCompletedTests() {
-		// stub
-		int count = 0;
-
-		
-		// get the total amount by iterating on users
-		/* for (User user : [method to get an iterable list of users]) {
-			// count the number of completed tests that user has gotten
-			count += user.getTestsTaken().length;
-		}
-		
-		*/
-
-		TestRecord[] records = new TestRecord[count];
-		// iterate through the above again and assign them by index
-
-		return null;
+		return dataManager.getCompletedTests();
 	}
 
 	public float calculateScore(TestRecord record, Test test) throws IncompatibleRecordException {
