@@ -35,8 +35,16 @@ public class Backend {
 			super("Invalid permissions were given when trying to construct or use this user; found " + found + " but expected " + expected);
 		}
 
-		public InvalidPermissionsException(PermissionLevel found = PermissionLevel.NONE) {
-			super("Invalid permissions were given; found " + found)
+		public InvalidPermissionsException(PermissionLevel found) {
+			super("Invalid permissions were given; found " + (found==null ? PermissionLevel.NONE : found));
+			// using a ternary operator (condition ? value if true : value if false) instead of the default variable thing because java doesn't have it :(
+			// would use if statement but the compiler throws a fit over a super/this call being somewhere other than line 1
+			// only useful if a retrieved value is null, calling the constructor when empty calls the one below
+		}
+		
+		public InvalidPermissionsException() {
+			this(PermissionLevel.NONE);
+			
 		}
 	}
 	
@@ -66,13 +74,15 @@ public class Backend {
 		return true;
 	}
 
-	public User register(String username, String password , String firstName, String lastName, PermissionLevel permissionLevel = PermissionLevel.STUDENT, String authCode = "")
+	public User register(String username, String password , String firstName, String lastName, PermissionLevel permissionLevel, String authCode)
 		throws PasswordLengthException, UsernameLengthException, InvalidPermissionsException, InvalidAuthorizationException
 	{
 		// call in a protected/try block, errors are returned as exceptions due to the signature requiring a User to be returned rather than a string
 		// "} catch(Backend.PasswordLengthException) {"
 		
 		// hash password here maybe?
+		if (permissionLevel==null) permissionLevel=PermissionLevel.STUDENT;
+		if (authCode==null) authCode = "";
 		
 		if (password.length() < PASSWORD_MINIMUM_LENGTH || 
 			password.length() > PASSWORD_MAXIMUM_LENGTH) {
@@ -90,13 +100,13 @@ public class Backend {
 		}
 
 		User newUser = new User(firstName, lastName, username, password);
-		newUser.setPermissionLevel();
+		newUser.setPermissionLevel(permissionLevel);
 		switch (permissionLevel) {
 			case PermissionLevel.NONE: break; 		// already handled
 			case PermissionLevel.STUDENT: break; 	// no action needed
 
 			case PermissionLevel.EDUCATOR: {
-				authorizeEducator(user, authCode);
+				authorizeEducator(newUser, authCode);
 				break;
 			}
 		}
@@ -109,7 +119,7 @@ public class Backend {
 
 	public void authorizeEducator(User user, String authCode) throws InvalidAuthorizationException {
 		if (!"<the correct code>".equals(authCode)) {
-			throw InvalidAuthorizationException();
+			throw new InvalidAuthorizationException();
 		}
 
 		// authorisation OK
