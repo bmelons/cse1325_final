@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.event.MouseAdapter;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -57,11 +58,17 @@ public class UIList extends JPanel {
 		add(this.titleLabel,BorderLayout.PAGE_START);
 		add(tableContainer,BorderLayout.CENTER);
 		add(actionPanel,BorderLayout.PAGE_END);
+		
+		MouseAdapter mouseAdapter = new MouseAdapter() {
+			
+		};
+		this.table.addMouseListener(mouseAdapter);
 
 	}
 	
 	public void onSelected() {
-//		int getSelection = this.table.get
+		int getSelection = this.table.getSelectedRow();
+		
 		return;
 		
 	}
@@ -82,14 +89,14 @@ public class UIList extends JPanel {
 
 	public void setColumns(String[] aColumns) {
 		this.columns = aColumns;
-		columnModel.setColumnCount(0);
+		this.columnModel.setColumnCount(0);
 		for (String column : this.columns) {
 			columnModel.addColumn(column);
 		}	
 	}
 	
 	public void addRow(Object[] rowData) {
-		columnModel.addRow(rowData);
+		this.columnModel.addRow(rowData);
 		return;
 	}
 
