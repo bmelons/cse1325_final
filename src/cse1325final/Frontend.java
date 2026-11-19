@@ -10,6 +10,9 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
 public class Frontend {
+	
+	private static final String[] HOME_COLUMNS = {"Tests","Shrimp Gumbo"};
+	
 	public static void main(String[] args) {
 		System.out.println("Intializing"); // makin' sure this method even runs before any real code is written, ->
 		// -> reloaded the project freshly cloned into a new workspace, $git diff shows
@@ -29,7 +32,7 @@ public class Frontend {
 		JPanel actionPanel = new UIPlaceholderButtons(3);
 		actionPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
-		UIList list = new UIList(); // TODO: Think about how we want to handle swapping out lists, refresh the existing one or make a new instance?
+		UIList list = new UIList("Available Tests",HOME_COLUMNS); // TODO: Think about how we want to handle swapping out lists, refresh the existing one or make a new instance?
 		list.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
 		frame.add(navbarPanel,BorderLayout.PAGE_START);
@@ -38,6 +41,10 @@ public class Frontend {
 		
 
 		frame.setVisible(true);
+		
+		// placeholder data
+		Object[] row = {"Math for dorks", "Hi"};
+		list.addRow(row);
 	}
 	
 	

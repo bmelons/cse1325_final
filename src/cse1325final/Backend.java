@@ -156,6 +156,7 @@ public class Backend {
 	public TestRecord[] getCompletedTests() {
 		// stub
 		int count = 0;
+
 		
 		// get the total amount by iterating on users
 		/* for (User user : [method to get an iterable list of users]) {

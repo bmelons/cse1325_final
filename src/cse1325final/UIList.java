@@ -23,13 +23,13 @@ public class UIList extends JPanel {
 	
 	private String title;
 	private JLabel titleLabel;
-//	private String[] columns;
+	private String[] columns;
 //	private boolean isEditing;
 //	private String specifiedType;
 //	private Object[] elements;
 //	private String searchColumn;
 	private JTextField searchBar;
-	private JTable list;	
+	private JTable table;	
 	private DefaultTableModel columnModel; // column manager
 	
 	public UIList(String aTitle) {
@@ -37,22 +37,60 @@ public class UIList extends JPanel {
 		this.setLayout(new BorderLayout(3,3));
 		this.setBorder(new LineBorder(Color.black, 2));
 		
-		this.columnModel = new DefaultTableModel(); // empty columns
-		this.list = new JTable(this.columnModel);
 		
-		this.title = "Unconfigured Table";
+		this.columnModel = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Prevents editing on all cells
+            }
+        }; // empty columns
+		this.table = new JTable(this.columnModel);
+		
+		this.title = aTitle==null ? "Unconfigured Table" : aTitle;
 		this.titleLabel = new JLabel(this.title);
 		
 		JPanel actionPanel = new UIPlaceholderButtons(2);
-		actionPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));;
+		actionPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		
+		JScrollPane tableContainer = new JScrollPane(table);
 		
 		add(this.titleLabel,BorderLayout.PAGE_START);
-		add(this.list,BorderLayout.CENTER);
+		add(tableContainer,BorderLayout.CENTER);
 		add(actionPanel,BorderLayout.PAGE_END);
+
+	}
+	
+	public void onSelected() {
+//		int getSelection = this.table.get
+		return;
+		
+	}
+	
+	public UIList(String aTitle, String[] columns) {
+		this(aTitle);
+		this.setColumns(columns);
 	}
 	
 	public UIList() {
 		this("--");
+	}
+	
+	
+	public String[] getColumns() {
+		return columns;
+	}
+
+	public void setColumns(String[] aColumns) {
+		this.columns = aColumns;
+		columnModel.setColumnCount(0);
+		for (String column : this.columns) {
+			columnModel.addColumn(column);
+		}	
+	}
+	
+	public void addRow(Object[] rowData) {
+		columnModel.addRow(rowData);
+		return;
 	}
 
 }
