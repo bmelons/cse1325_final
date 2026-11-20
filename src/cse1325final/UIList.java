@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -60,7 +61,11 @@ public class UIList extends JPanel {
 		add(actionPanel,BorderLayout.PAGE_END);
 		
 		MouseAdapter mouseAdapter = new MouseAdapter() {
-			
+			public void mousePressed(MouseEvent event) {
+				if (event.getClickCount() == 2) {
+					System.out.println("Double click detected");
+				}
+			}
 		};
 		this.table.addMouseListener(mouseAdapter);
 

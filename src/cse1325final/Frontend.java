@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -26,16 +28,15 @@ public class Frontend {
 		
 		// SETUP, probably move to a new block if we don't end up needing to keep these variables around
 		// UI elements
-		JPanel navbarPanel = new UIPlaceholderButtons(4);
-		navbarPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		// i have realized theres not really a reason to have a navbar..
+		//JPanel navbarPanel = new UIFlowPanel();
 		
-		JPanel actionPanel = new UIPlaceholderButtons(3);
-		actionPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		JPanel actionPanel = new UIFlowPanel();
+		
 		
 		UIList list = new UIList("Available Tests",HOME_COLUMNS); // TODO: Think about how we want to handle swapping out lists, refresh the existing one or make a new instance?
-		list.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
-		frame.add(navbarPanel,BorderLayout.PAGE_START);
+//		frame.add(navbarPanel,BorderLayout.PAGE_START);
 		frame.add(list, BorderLayout.CENTER);
 		frame.add(actionPanel,BorderLayout.PAGE_END);
 		
@@ -43,8 +44,14 @@ public class Frontend {
 		frame.setVisible(true);
 		
 		// placeholder data
-		Object[] row = {"Math for dorks", "Hi"};
-		list.addRow(row);
+		Object[][] rows = {
+				{"Math for dorks", "Hi"},
+				{"Economics for hobos", "extra spicy"},
+				{"Idiot Test", "placehoulder!?"}
+				};
+		for (Object[] row : rows) {
+			list.addRow(row);
+		}
 	}
 	
 	
@@ -87,8 +94,8 @@ public class Frontend {
 		
 		// TODO: Implement these buttons
 		JMenuItem af,ae;
-		af = new JMenuItem("A");
-		ae = new JMenuItem("B");
+		af = new JMenuItem("Save");
+		ae = new JMenuItem("Exit");
 		fileMenu.add(af);
 		fileMenu.add(ae);
 		
@@ -96,5 +103,12 @@ public class Frontend {
 		
 		return menuBar;
 	}
+	
+	private static void makeLowerActionPanelButtons(JPanel container) {
+		JButton openLoginRegButton = new JButton("Login & Register");
+//		openLoginRegButton.add();
+	}
+	
+
 
 }

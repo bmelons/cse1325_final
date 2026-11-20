@@ -20,6 +20,7 @@ public class UIPlaceholderButtons extends JPanel {
 	private static final String[] dummyTexts = {"Action", "An Action", "BTTN", "Too Long Button Text"}; // to see how swing handles different lengths of buttons
 	
     public UIPlaceholderButtons(int n) { 
+    	super();
     	// flow layout arranges components sequentially in a single horizontal row
         setLayout(new FlowLayout(FlowLayout.CENTER));
         Random random = new Random();
