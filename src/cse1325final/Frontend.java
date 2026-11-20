@@ -14,6 +14,7 @@ import javax.swing.border.EmptyBorder;
 public class Frontend {
 	
 	private static final String[] HOME_COLUMNS = {"Tests","Shrimp Gumbo"};
+	private static JFrame frame;
 	
 	public static void main(String[] args) {
 		System.out.println("Intializing"); // makin' sure this method even runs before any real code is written, ->
@@ -22,7 +23,7 @@ public class Frontend {
 		
 		Backend backend = new Backend();
 
-		JFrame frame = makeMainFrame();
+		frame = makeMainFrame();
 		JMenuBar menuBar = makeMenuBar();
 		frame.setJMenuBar(menuBar);
 		
@@ -32,6 +33,7 @@ public class Frontend {
 		//JPanel navbarPanel = new UIFlowPanel();
 		
 		JPanel actionPanel = new UIFlowPanel();
+		makeLowerActionPanelButtons(actionPanel);
 		
 		
 		UIList list = new UIList("Available Tests",HOME_COLUMNS); // TODO: Think about how we want to handle swapping out lists, refresh the existing one or make a new instance?
@@ -104,9 +106,24 @@ public class Frontend {
 		return menuBar;
 	}
 	
+	private static void openLogin() {
+		new UILoginRegister(frame,false);
+	}
+	
+	private static void openRegistry() {
+		new UILoginRegister(frame,true);
+	}
+	
 	private static void makeLowerActionPanelButtons(JPanel container) {
-		JButton openLoginRegButton = new JButton("Login & Register");
-//		openLoginRegButton.add();
+		JButton openLoginButton = new JButton("Login");
+		JButton openRegButton = new JButton("Register");
+		
+		openLoginButton.addActionListener(e -> openLogin());
+		openRegButton.addActionListener(e -> openRegistry());
+		
+		container.add(openLoginButton);
+		container.add(openRegButton);
+		
 	}
 	
 

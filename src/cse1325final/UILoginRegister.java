@@ -28,7 +28,7 @@ public class UILoginRegister extends JDialog {
 		
 		
 		// layout for this window is a box
-		BoxLayout layout = new BoxLayout(this, BoxLayout.Y_AXIS);
+		BoxLayout layout = new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS);
 		setLayout(layout);
 		
 		
@@ -50,7 +50,12 @@ public class UILoginRegister extends JDialog {
 		authRow.add(this.authLabel);
 		authRow.add(this.authField);
 		
+		add(unameRow);
+		add(pwordRow);
 		
+		setSize(600,400);
+		setLocationRelativeTo(parentFrame);
+		setVisible(true);
 //		add(this.usernameLabel);
 //		add(this.usernameField);
 //		

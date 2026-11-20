@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.util.Scanner;
+import java.util.ArrayList;
 
 public class DataManager {
 	private static String filePath = "~/Documents/Test/usr.dat";
