@@ -8,10 +8,14 @@ import javax.swing.border.LineBorder;
 public class UIFlowPanel extends JPanel {
 	// subclass to quickly define horizontally flowing panels
 	public UIFlowPanel() { 
+		this(false);
+    }
+	
+	public UIFlowPanel(boolean border) { 
 		super();
     	// flow layout arranges components sequentially in a single horizontal row
         setLayout(new FlowLayout(FlowLayout.CENTER));
-        setBorder(new LineBorder(Color.black, 1));
+        if (border) setBorder(new LineBorder(Color.LIGHT_GRAY, 1));
     }
 
 }

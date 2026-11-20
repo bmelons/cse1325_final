@@ -37,7 +37,7 @@ public class UIList extends JPanel {
 	public UIList(String aTitle) {
 		super();
 		this.setLayout(new BorderLayout(3,3));
-		this.setBorder(new LineBorder(Color.black, 2));
+		this.setBorder(new LineBorder(Color.LIGHT_GRAY, 2));
 		
 		
 		this.columnModel = new DefaultTableModel() {
@@ -48,7 +48,7 @@ public class UIList extends JPanel {
         }; // empty columns
 		this.table = new JTable(this.columnModel);
 		
-		this.title = aTitle==null ? "Unconfigured Table" : aTitle;
+		this.title = (aTitle==null) ? "Unconfigured Table" : aTitle;
 		this.titleLabel = new JLabel(this.title);
 		
 		JPanel actionPanel = new UIPlaceholderButtons(2);
