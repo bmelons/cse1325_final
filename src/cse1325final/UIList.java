@@ -7,6 +7,7 @@ import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -51,8 +52,12 @@ public class UIList extends JPanel {
 		this.title = (aTitle==null) ? "Unconfigured Table" : aTitle;
 		this.titleLabel = new JLabel(this.title);
 		
-		JPanel actionPanel = new UIPlaceholderButtons(2);
+		// action panel
+		JPanel actionPanel = new UIFlowPanel();
 		actionPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		
+		JButton selectButton = new JButton("Open");
+		selectButton.addActionListener(e -> onSelected());
 		
 		JScrollPane tableContainer = new JScrollPane(table);
 		
@@ -63,7 +68,7 @@ public class UIList extends JPanel {
 		MouseAdapter mouseAdapter = new MouseAdapter() {
 			public void mousePressed(MouseEvent event) {
 				if (event.getClickCount() == 2) {
-					System.out.println("Double click detected");
+					onSelected();
 				}
 			}
 		};
@@ -72,7 +77,8 @@ public class UIList extends JPanel {
 	}
 	
 	public void onSelected() {
-		int getSelection = this.table.getSelectedRow();
+		int getSelection = this.table.getSelectedRow(); // index starts at 0 like arrays
+		System.out.println("Item " + getSelection + " selected");
 		
 		return;
 		

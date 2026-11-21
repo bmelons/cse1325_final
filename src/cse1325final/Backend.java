@@ -2,6 +2,7 @@ package cse1325final;
 
 public class Backend {
 	private static DataManager dataManager = new DataManager();
+	private static final User PLACEHOLDER_EDUCATOR = new User("Alpha","Beta","gamma1","thus");
 	
 	// account string length restrictions are exclusive (min < length < max)
 	private static final int PASSWORD_MINIMUM_LENGTH = 3;

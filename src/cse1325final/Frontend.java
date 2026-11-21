@@ -15,13 +15,14 @@ public class Frontend {
 	
 	private static final String[] HOME_COLUMNS = {"Tests","Shrimp Gumbo"};
 	private static JFrame frame;
+	public static Backend backend;
 	
 	public static void main(String[] args) {
 		System.out.println("Intializing"); // makin' sure this method even runs before any real code is written, ->
 		// -> reloaded the project freshly cloned into a new workspace, $git diff shows
 		// no differences so i think we're good
 		
-		Backend backend = new Backend();
+		backend = new Backend();
 
 		frame = makeMainFrame();
 		JMenuBar menuBar = makeMenuBar();
