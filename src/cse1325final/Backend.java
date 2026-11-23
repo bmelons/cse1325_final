@@ -1,186 +1,383 @@
 package cse1325final;
 
+import java.util.ArrayList;
+
 public class Backend {
-	private static DataManager dataManager = new DataManager();
-	private static final User PLACEHOLDER_EDUCATOR = new User("Alpha","Beta","gamma1","thus");
+    private static final DataManager dataManager = new DataManager();
+
+    // Only one user can be logged in at a time
+    private static User currentUser;
+
+    // Account restrictions
+    private static final int PASSWORD_MINIMUM_LENGTH = 3;
+    private static final int PASSWORD_MAXIMUM_LENGTH = 20;
+
+    private static final int USERNAME_MINIMUM_LENGTH = 3;
+    private static final int USERNAME_MAXIMUM_LENGTH = 20;
+
+    // Registration authorization codes
+	// (we can probably just read these from a file. like "auth.txt" or something)
+	// TODO!
+    private static final String EDUCATOR_AUTH_CODE = "TODO_EDUCATOR";
+    private static final String ADMIN_AUTH_CODE = "TODO_ADMIN";
+
+	// Exceptions
+    public static final class PasswordLengthException extends Exception {
+        public PasswordLengthException() {
+            super("Password must be greater than "
+                    + PASSWORD_MINIMUM_LENGTH
+                    + " characters and less than "
+                    + PASSWORD_MAXIMUM_LENGTH + " characters.");
+        }
+    }
+
+    public static final class UsernameLengthException extends Exception {
+        public UsernameLengthException() {
+            super("Username must be greater than "
+                    + USERNAME_MINIMUM_LENGTH
+                    + " characters and less than "
+                    + USERNAME_MAXIMUM_LENGTH + " characters.");
+        }
+    }
+
+    public static final class IncompatibleRecordException extends Exception {
+        public IncompatibleRecordException() {
+            super("The TestRecord does not match the given Test.");
+        }
+    }
+
+    public static final class InvalidPermissionsException extends Exception {
+        public InvalidPermissionsException(PermissionLevel found, PermissionLevel expected) {
+            super("Invalid permissions. Found " + found + " but expected " + expected + ".");
+        }
+
+        public InvalidPermissionsException(PermissionLevel found) {
+            super("Invalid permissions: " + found);
+        }
+
+        public InvalidPermissionsException() {
+            this(PermissionLevel.NONE);
+        }
+    }
+
+    public static final class InvalidAuthorizationException extends Exception {
+        public InvalidAuthorizationException() {
+            super("Invalid authorization code.");
+        }
+    }
+
+    public static final class DuplicateUsernameException extends Exception {
+        public DuplicateUsernameException() {
+            super("That username is already in use.");
+        }
+    }
+
+    public static final class InvalidTestException extends Exception {
+        public InvalidTestException(String message) {
+            super(message);
+        }
+    }
+
+	// Authentication
+    public boolean login(String username, String password) {
+
+        User user = dataManager.getUser(username);
+
+        if (user == null) {
+            return false;
+        }
+
+        if (!password.equals(user.getPassword())) {
+            return false;
+        }
+
+        if (user.getPermissionLevel() == PermissionLevel.NONE) {
+            return false;
+        }
+
+        currentUser = user;
+        return true;
+    }
+
+    public void logout() {
+        currentUser = null;
+    }
+
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
+    public boolean isLoggedIn() {
+        return currentUser != null;
+    }
 	
-	// account string length restrictions are exclusive (min < length < max)
-	private static final int PASSWORD_MINIMUM_LENGTH = 3;
-	private static final int PASSWORD_MAXIMUM_LENGTH = 20;
-	
-	private static final int USERNAME_MINIMUM_LENGTH = 3;
-	private static final int USERNAME_MAXIMUM_LENGTH = 20;
-	
-	// TODO: consider extracting these to make this class easier to read
-	// EXCEPTIONS
-	public static final class PasswordLengthException extends Exception {
-		public PasswordLengthException() {
-			super("Illegal Password Length: must be greater than " + PASSWORD_MINIMUM_LENGTH + " characters and less than " + PASSWORD_MAXIMUM_LENGTH + " characters");
-		}
-	}
-	
-	public static final class UsernameLengthException extends Exception {
-		public UsernameLengthException() {
-			super("Illegal Username Length: must be greater than " + USERNAME_MINIMUM_LENGTH + " characters and less than " + USERNAME_MAXIMUM_LENGTH + " characters");
-		}
-	}
-
-	public static final class IncompatibleRecordException extends Exception {
-		public IncompatibleRecordException() {
-			super("The given TestRecord has one or more property that doesn't fit against the given Test");
-		}
-	}
-
-	public static final class InvalidPermissionsException extends Exception {
-		public InvalidPermissionsException(PermissionLevel found, PermissionLevel expected) {
-			super("Invalid permissions were given when trying to construct or use this user; found " + found + " but expected " + expected);
-		}
-
-		public InvalidPermissionsException(PermissionLevel found) {
-			super("Invalid permissions were given; found " + (found==null ? PermissionLevel.NONE : found));
-			// using a ternary operator (condition ? value if true : value if false) instead of the default variable thing because java doesn't have it :(
-			// would use if statement but the compiler throws a fit over a super/this call being somewhere other than line 1
-			// only useful if a retrieved value is null, calling the constructor when empty calls the one below
-		}
-		
-		public InvalidPermissionsException() {
-			this(PermissionLevel.NONE);
-			
-		}
-	}
-	
-	public static final class InvalidAuthorizationException extends Exception {
-		public InvalidAuthorizationException() {
-			super("Invalid authorization");
-		}
-	}
-
-	// if more than one instance of this class exists, something is wrong!
-	private static User currentUser; // static because only one user can be logged in at a time
-
-	public boolean login(String username, String password) {
-		// stub
-		// This should return the RESULT of the login attempt
-		// if it succeeds return true, maybe make some exceptions
-		User user = dataManager.getUser(username);
-		if (user == null) {
-			return false;
-		}
-
-		if (!password.equals(user.getPassword())) {
-			return false;
-		}
-
-		currentUser = user;
-		return true;
-	}
-
-	public User register(String username, String password , String firstName, String lastName, PermissionLevel permissionLevel, String authCode)
-		throws PasswordLengthException, UsernameLengthException, InvalidPermissionsException, InvalidAuthorizationException
+	// Registration
+    public User register(
+            String username,
+            String password,
+            String firstName,
+            String lastName,
+            PermissionLevel permissionLevel,
+            String authCode)
+            throws PasswordLengthException,
+                   UsernameLengthException,
+                   InvalidPermissionsException,
+                   InvalidAuthorizationException,
+                   DuplicateUsernameException
 	{
-		// call in a protected/try block, errors are returned as exceptions due to the signature requiring a User to be returned rather than a string
-		// "} catch(Backend.PasswordLengthException) {"
-		
-		// hash password here maybe?
-		if (permissionLevel==null) permissionLevel=PermissionLevel.STUDENT;
-		if (authCode==null) authCode = "";
-		
-		if (password.length() < PASSWORD_MINIMUM_LENGTH || 
-			password.length() > PASSWORD_MAXIMUM_LENGTH) {
-			throw new PasswordLengthException();
-		}
-		
-		if (username.length() < USERNAME_MINIMUM_LENGTH || 
-			password.length() > PASSWORD_MAXIMUM_LENGTH) {
-			throw new UsernameLengthException();
-		}
-		
-		// permission level should not be set to NONE, but handle it in case it is
-		if (permissionLevel == PermissionLevel.NONE) {
-			throw new InvalidPermissionsException();
-		}
+        if (username == null || username.length() <= USERNAME_MINIMUM_LENGTH || username.length() >= USERNAME_MAXIMUM_LENGTH) {
+            throw new UsernameLengthException();
+        }
 
-		User newUser = new User(firstName, lastName, username, password);
-		newUser.setPermissionLevel(permissionLevel);
-		switch (permissionLevel) {
-			case PermissionLevel.NONE: break; 		// already handled
-			case PermissionLevel.STUDENT: break; 	// no action needed
+        if (password == null || password.length() <= PASSWORD_MINIMUM_LENGTH || password.length() >= PASSWORD_MAXIMUM_LENGTH) {
+            throw new PasswordLengthException();
+        }
 
-			case PermissionLevel.EDUCATOR: {
-				authorizeEducator(newUser, authCode);
-				break;
-			}
-		}
+        if (firstName == null || firstName.trim().isEmpty() || lastName == null || lastName.trim().isEmpty()) {
+            throw new IllegalArgumentException("First and last names cannot be empty.");
+        }
 
-		newUser.setPermissionLevel(permissionLevel);
-		dataManager.addUser(newUser); // solidifies user into the base
-		
-		return newUser;
-	}
+        if (dataManager.getUser(username) != null) {
+            throw new DuplicateUsernameException();
+        }
 
-	public void authorizeEducator(User user, String authCode) throws InvalidAuthorizationException {
-		if (!"<the correct code>".equals(authCode)) {
-			throw new InvalidAuthorizationException();
-		}
+        if (permissionLevel == null) {
+            permissionLevel = PermissionLevel.STUDENT;
+        }
 
-		// authorisation OK
-	}
+        if (permissionLevel == PermissionLevel.NONE) {
+            throw new InvalidPermissionsException();
+        }
 
-	// public User register(String username, String password, String authCode) {
-	// 	if (authCode != "the right code") // TODO: connect to any system that allows changing the authcode
-	// 	{
-	// 		return null;
-	// 	}
-	// 	User newUser = new User;
+        // Only administrators can create educator accounts
+        if (permissionLevel == PermissionLevel.EDUCATOR) {
+            requirePermission(PermissionLevel.ADMINISTRATOR);
+            authorizeEducator(authCode);
+        }
 
-	// 	// TODO: set permission code
+        // Administrator accounts cannot be self-registered
+        if (permissionLevel == PermissionLevel.ADMINISTRATOR) {
+            throw new InvalidPermissionsException(PermissionLevel.ADMINISTRATOR);
+        }
 
-	// 	// this is the PROFESSOR version of the register function, since they have to
-	// 	// give an auth code to register
-	// 	return newUser;
-	// }
+        User newUser = new User(firstName.trim(), lastName.trim(), username, password);
 
-	public Test createTest(String name) {
-		// stub
-		return null;
-	}
+        newUser.setPermissionLevel(permissionLevel);
+        newUser.setID(generateUserID());
 
-	public void submitTest(String name) {
-		// stub
-		return;
-	}
+        dataManager.addUser(newUser);
 
-	public void getAvailableTests() {
-		// stub
-	}
+        return newUser;
+    }
 
-	public TestRecord[] getCompletedTests() {
-		return dataManager.getCompletedTests();
-	}
+    public void authorizeEducator(String authCode) throws InvalidAuthorizationException {
+        if (authCode == null || !ADMIN_AUTH_CODE.equals(authCode)) {
+            throw new InvalidAuthorizationException();
+        }
+    }
 
-	public float calculateScore(TestRecord record, Test test) throws IncompatibleRecordException {
-		Object[] answers = record.getAnswers();
-		return calculateScore(answers, test);
-	}
+	// Permissions
+    private void requireLogin() throws InvalidPermissionsException {
+        if (currentUser == null) {
+            throw new InvalidPermissionsException();
+        }
+    }
 
-	public float calculateScore(Object[] answers, Test test) throws IncompatibleRecordException {
-		TestQuestion[] questions = test.getQuestions();
+    private void requirePermission(PermissionLevel expected) throws InvalidPermissionsException {
+        requireLogin();
+
+        if (currentUser.getPermissionLevel() != expected && currentUser.getPermissionLevel() != PermissionLevel.ADMINISTRATOR) {
+            throw new InvalidPermissionsException(currentUser.getPermissionLevel(), expected);
+        }
+    }
+
+	// ID generation
+    private int generateUserID() {
+        int highestID = 0;
+
+        for (User user : dataManager.getUsers()) {
+            if (user.getID() > highestID) {
+                highestID = user.getID();
+            }
+        }
+
+        return highestID + 1;
+    }
+
+    private int generateTestID() {
+        int highestID = 0;
+
+        for (Test test : dataManager.getTests()) {
+            if (test.getId() > highestID) {
+                highestID = test.getId();
+            }
+        }
+
+        return highestID + 1;
+    }
 	
-		if (questions.length != answers.length) {
-			throw new IncompatibleRecordException();
-		}
-		
-		int correctAnswers = 0;
-		
-		for (int i = 0; i < questions.length; i++) {
-			TestQuestion question = questions[i];
-			Object answer = answers[i];
-			if (answer.equals(question.getAnswer())) {
-				correctAnswers++;
-			}
-		}
-		
-		return (float)correctAnswers / (float)questions.length;
-	}
+	// Test creation
+    public Test createTest(String name) throws InvalidPermissionsException, InvalidTestException {
+        requirePermission(PermissionLevel.EDUCATOR);
 
+        if (name == null || name.trim().isEmpty()) {
+            throw new InvalidTestException("Test name cannot be empty.");
+        }
+
+        Test test = new Test(generateTestID(), name.trim(), currentUser.getID());
+
+        dataManager.addTest(test);
+
+        return test;
+    }
+
+	// Question management
+    public void addQuestion(int testID, TestQuestion question) throws InvalidPermissionsException, InvalidTestException {
+        requirePermission(PermissionLevel.EDUCATOR);
+
+        Test test = dataManager.getTest(testID);
+
+        if (test == null) {
+            throw new InvalidTestException("Test not found.");
+        }
+
+        if (test.getAuthorId() != currentUser.getID() && currentUser.getPermissionLevel() != PermissionLevel.ADMINISTRATOR) {
+            throw new InvalidPermissionsException(currentUser.getPermissionLevel(), PermissionLevel.EDUCATOR);
+        }
+
+        if (question == null) {
+            throw new InvalidTestException("Question cannot be empty.");
+        }
+
+        test.addQuestion(question);
+
+        recalculateTestScores(test);
+        dataManager.saveTestData();
+    }
+
+    public void removeQuestion(int testID, int questionIndex) throws InvalidPermissionsException, InvalidTestException {
+        requirePermission(PermissionLevel.EDUCATOR);
+
+        Test test = dataManager.getTest(testID);
+
+        if (test == null) {
+            throw new InvalidTestException("Test not found.");
+        }
+
+        if (test.getAuthorId() != currentUser.getID() && currentUser.getPermissionLevel() != PermissionLevel.ADMINISTRATOR) {
+            throw new InvalidPermissionsException(currentUser.getPermissionLevel(), PermissionLevel.EDUCATOR);
+        }
+
+        if (questionIndex < 0 || questionIndex >= test.getQuestionCount()) {
+            throw new InvalidTestException("Invalid question index.");
+        }
+
+        test.removeQuestion(questionIndex);
+
+        recalculateTestScores(test);
+        dataManager.saveTestData();
+    }
+
+	// Test retrival
+    public ArrayList<Test> getAvailableTests() {
+        return dataManager.getTests();
+    }
+
+    public Test getTest(int testID) {
+        return dataManager.getTest(testID);
+    }
+
+    public Test getTest(String name) {
+        return dataManager.getTest(name);
+    }
+	
+	// Test submission
+    public TestRecord submitTest(int testID, ArrayList<Object> answers)
+            throws InvalidPermissionsException,
+                   InvalidTestException,
+                   IncompatibleRecordException
+	{
+        requirePermission(PermissionLevel.STUDENT);
+
+        Test test = dataManager.getTest(testID);
+
+        if (test == null) {
+            throw new InvalidTestException("Test not found.");
+        }
+
+        if (answers == null) {
+            throw new InvalidTestException("Answers cannot be null.");
+        }
+
+        double score = calculateScore(answers, test);
+
+        TestRecord record = new TestRecord(
+            currentUser.getID(),
+            testID,
+            answers,
+            score
+        );
+
+        dataManager.addTestRecord(record);
+
+        return record;
+    }
+
+	// Grading
+    public double calculateScore(TestRecord record, Test test) throws IncompatibleRecordException {
+        if (record == null) {
+            throw new IllegalArgumentException("Test record cannot be null.");
+        }
+
+        return calculateScore(record.getAnswers(), test);
+    }
+
+    public double calculateScore(ArrayList<Object> answers, Test test) throws IncompatibleRecordException {
+        if (test == null || answers == null) {
+            throw new IllegalArgumentException("Test and answers cannot be null.");
+        }
+
+        ArrayList<TestQuestion> questions = test.getQuestions();
+
+        if (questions.size() != answers.size() || questions.isEmpty()) {
+            throw new IncompatibleRecordException();
+        }
+
+        int correctAnswers = 0;
+
+        for (int i = 0; i < questions.size(); i++) {
+            TestQuestion question = questions.get(i);
+            Object submittedAnswer = answers.get(i);
+
+            if ((submittedAnswer instanceof Integer) && question.isCorrect((Integer) submittedAnswer)) {
+                correctAnswers++;
+            }
+        }
+
+        return (double) correctAnswers / questions.size();
+    }
+
+	// Test results
+    public ArrayList<TestRecord> getCompletedTests() throws InvalidPermissionsException {
+        requireLogin();
+
+        if (currentUser.getPermissionLevel() == PermissionLevel.STUDENT) {
+            return dataManager.getCompletedTests(currentUser.getID());
+        }
+
+        throw new InvalidPermissionsException(currentUser.getPermissionLevel(), PermissionLevel.STUDENT);
+    }
+
+	// retroactive grading
+    private void recalculateTestScores(Test test) {
+        for (TestRecord record : test.getResults()) {
+            try {
+                double newScore = calculateScore(record, test);
+                record.setScore(newScore);
+            } catch (IncompatibleRecordException e) {
+                // record no longer matches the test
+                record.setScore(0.0);
+            }
+        }
+    }
 }

@@ -1,53 +1,92 @@
 package cse1325final;
 
+import java.util.ArrayList;
+
 public class TestQuestion {
-	private String question = "";
-	private QuestionType questionType;
-	private int answer; // is the index of the right answer if question type is multiple-choice, numeric if the question type is
-						// numeric
-	private String options[];
+    private String question;
+    private QuestionType questionType;
+    private int answer; // the index of the right answer if multiple-choice, and numeric if numeric
+    private ArrayList<String> options;
 
-	public TestQuestion(String question, QuestionType questionType, int answer, String[] options) {
-		this.question = question;
-		this.questionType = questionType;
-		this.answer = answer;
-		this.options = options;
-	}
+    public TestQuestion(String question, QuestionType questionType, int answer, ArrayList<String> options) {
+        this.question = question;
+        this.questionType = questionType;
+        this.answer = answer;
 
-	public String getQuestion() {
-		return this.question;
-	}
+		this.options = options != null
+			? new ArrayList<>(options)
+			: new ArrayList<>();
+    }
 
-	public void setQuestion(String question) {
-		this.question = question;
-	}
+    // Question
+    public String getQuestion() {
+        return question;
+    }
 
-	public QuestionType getQuestionType() {
-		return questionType;
-	}
+    public void setQuestion(String question) {
+        this.question = question;
+    }
 
-	public void setQuestionType(QuestionType questionType) {
-		this.questionType = questionType;
-	}
+    // Question type
+    public QuestionType getQuestionType() {
+        return questionType;
+    }
 
-	public int getAnswer() {
-		return answer;
-	}
+    public void setQuestionType(QuestionType questionType) {
+        this.questionType = questionType;
+    }
 
-	public void setAnswer(int answer) {
-		this.answer = answer;
-	}
+    // Correct answer
+    public int getAnswer() {
+        return answer;
+    }
 
-	public String[] getOptions() {
-		return this.options;
-	}
+    public void setAnswer(int answer) {
+        this.answer = answer;
+    }
 
-	public void setOptions(String[] options) {
-		this.options = options;
-	}
+    // Answer options
+    public ArrayList<String> getOptions() {
+        return new ArrayList<>(options);
+    }
 
-	public boolean equals(TestQuestion other) {
-		return question.toLowerCase().equals(other.question.toLowerCase()) && questionType == other.questionType
-				&& answer == other.answer && options.equals(other.options);
-	}
+    public void setOptions(ArrayList<String> options) {
+        if (options == null) {
+            this.options = new ArrayList<>();
+        } else {
+            this.options = new ArrayList<>(options);
+        }
+    }
+
+    public void addOption(String option) {
+        options.add(option);
+    }
+
+    public void removeOption(int index) {
+        if (index >= 0 && index < options.size()) {
+            options.remove(index);
+        }
+    }
+
+    // Check submitted answer
+    public boolean isCorrect(int submittedAnswer) {
+        return submittedAnswer == answer;
+    }
+
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (!(obj instanceof TestQuestion)) {
+            return false;
+        }
+
+        TestQuestion other = (TestQuestion) obj;
+
+        return question.equalsIgnoreCase(other.question)
+                && questionType == other.questionType
+                && answer == other.answer
+                && options.equals(other.options);
+    }
 }

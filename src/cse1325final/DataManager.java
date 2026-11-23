@@ -1,95 +1,206 @@
 package cse1325final;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.util.Scanner;
+
 import java.util.ArrayList;
+import java.io.*;
 
 public class DataManager {
-	private static String filePath = "~/Documents/Test/usr.dat";
-	private static FileWriter writer;
-	
-	// considering making the following 2 variables static
-	private GenLL<User> UsersLL;
-	private GenLL<Test> TestsLL;
-	
-	public DataManager() {
-		UsersLL = new GenLL<>();
-		TestsLL = new GenLL<>();
-		this.importUsers();
-		this.importTests();
-		return;
-	}
-	
-	public void addUser(User user) {
-		if (UsersLL == null) {
-			return;
-		}
-		UsersLL.add(user);
-	}
-	
-	public User getUser(String name) {
-		return UsersLL.search(user -> user.getUsername().equals(name));
-	}
-	
-	public User getUser(int id) {
-		return UsersLL.search(user -> user.getID() == id);
-	}
-	
-	public Test getTest(String name) {
-		return TestsLL.search(test -> test.getName().equals(name));
-	}
+    // File locations
+    private static final String USER_FILE = "users.txt";
+    private static final String TEST_FILE = "tests.txt";
 
-	public Test getTest(int id) {
-		return TestsLL.search(test -> test.getId() == id);
-	}
+    // Stored data
+    private ArrayList<User> users;
+    private ArrayList<Test> tests;
 
-	public Test[] getTests() {
-		return TestsLL.getIterable();
-	}
+    public DataManager() {
+        users = new ArrayList<>();
+        tests = new ArrayList<>();
 
-	public Test[] getCompletedTests() {
-		ArrayList<Test> tests = new ArrayList<Test>();
+        importUsers();
+        importTests();
+    }
+	
+	// User management
+    public void addUser(User user) {
+        if (user == null || getUser(user.getUsername()) != null) {
+            return;
+        }
 
-		for (User user : UsersLL.getIterable()) {
-			int[] testIDs = user.getTestsTaken();
+        users.add(user);
+        saveUserData();
+    }
 
-			if (testIDs == null) {
-				continue;
-			}
+    public User getUser(String username) {
+        for (User user : users) {
+            if (user.getUsername().equals(username)) {
+                return user;
+            }
+        }
 
-			for (int testID : testIDs) {
-				Test test = getTest(testID);
-				if (test != null) {
-					tests.add(test);
-				}
-			}
-		}
-		return tests.toArray(new Test[0]); 
-	}
+        return null;
+    }
 
-	public User[] getUsers() {
-		return UsersLL.getIterable();
-	}
-	
-	//TODO: how do we want to serialize/deserialize?
-	// maybe a static factory inside the user and test classes..? idk at the moment
-	
-	private void importUsers() { // was readUsersData() in uml
-		// should read and store user data
-		
-	}
-	
-	private void importTests() { // was readTestData()
-		//sssdsdsd
-	}
-	
-	public void saveUserData() {
-		//stub
-	} 
-	
-	public void saveTestData() {
-		
-	}
-	
+    public User getUser(int id) {
+        for (User user : users) {
+            if (user.getID() == id) {
+                return user;
+            }
+        }
+
+        return null;
+    }
+
+    public boolean removeUser(int id) {
+        User user = getUser(id);
+
+        if (user == null) {
+            return false;
+        }
+
+        users.remove(user);
+
+        // remove the student's attempts from all tests
+        for (Test test : tests) {
+            ArrayList<TestRecord> results = test.getResults();
+
+            results.removeIf(record -> record.getUserId() == id);
+
+            test.setResults(results);
+        }
+
+        saveUserData();
+        saveTestData();
+
+        return true;
+    }
+
+    public ArrayList<User> getUsers() {
+        return new ArrayList<>(users);
+    }
+
+	// Test management
+    public void addTest(Test test) {
+        if (test == null || getTest(test.getId()) != null) {
+            return;
+        }
+
+        tests.add(test);
+        saveTestData();
+    }
+
+    public Test getTest(String name) {
+        for (Test test : tests) {
+            if (test.getName().equals(name)) {
+                return test;
+            }
+        }
+
+        return null;
+    }
+
+    public Test getTest(int id) {
+        for (Test test : tests) {
+            if (test.getId() == id) {
+                return test;
+            }
+        }
+
+        return null;
+    }
+
+    public boolean removeTest(int id) {
+        Test test = getTest(id);
+
+        if (test == null) {
+            return false;
+        }
+
+        tests.remove(test);
+
+        // remove test from student histories
+        for (User user : users) {
+            user.removeTestTaken(id);
+        }
+
+        saveUserData();
+        saveTestData();
+
+        return true;
+    }
+
+    public ArrayList<Test> getTests() {
+        return new ArrayList<>(tests);
+    }
+
+	// Test record management
+    public void addTestRecord(TestRecord record) {
+        if (record == null) {
+            return;
+        }
+
+        Test test = getTest(record.getTestId());
+
+        if (test == null) {
+            return;
+        }
+
+        User user = getUser(record.getUserId());
+
+        if (user == null) {
+            return;
+        }
+
+        test.addResult(record);
+        user.addTestTaken(record.getTestId());
+
+        saveUserData();
+        saveTestData();
+    }
+
+    public ArrayList<TestRecord> getCompletedTests(int userId) {
+        ArrayList<TestRecord> completed = new ArrayList<>();
+
+        for (Test test : tests) {
+            for (TestRecord record : test.getResults()) {
+                if (record.getUserId() == userId) {
+                    completed.add(record);
+                }
+            }
+        }
+
+        return completed;
+    }
+
+	// File importing
+    private void importUsers() {
+        File file = new File(USER_FILE);
+
+        if (!file.exists()) {
+            return;
+        }
+
+		// TODO!
+        // (file parsing will be implemented once we
+        // establish the complete user file format)
+		// consider CSV maybe? it doesn't really have to be complex
+    }
+
+    private void importTests() {
+        File file = new File(TEST_FILE);
+
+        if (!file.exists()) {
+            return;
+        }
+
+		// TODO!
+    }
+
+	// File exporting
+    public void saveUserData() {
+        // TODO!
+    }
+
+    public void saveTestData() {
+        // TODO!
+    }
 }

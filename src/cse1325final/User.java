@@ -1,85 +1,104 @@
 package cse1325final;
 
+import java.util.ArrayList;
+
 public class User {
-	// User info
-	private int id;
+    // User information
+    private int id;
+    private String firstName;
+    private String lastName;
+    private String username;
+    private String password;
 
-	private String firstName;
-	private String lastName;
-	private String username; 
-	// username is necessary because of people with the same name, 
-	// first, last or both, making searching for it by a single string not practical
-	private String password;
-	private PermissionLevel permissionLevel;
-	// A list of test IDs taken by the user
-	private int testsTaken[];
+    // Account permissions
+    private PermissionLevel permissionLevel;
 
-	public User(String first, String last, String user, String pass) {
-		id = 0;
-		firstName = first;
-		lastName = last;
-		username = user;
-		password = pass;
-		permissionLevel = PermissionLevel.NONE;
-	}
+    // IDs of tests completed by this user
+    private ArrayList<Integer> testsTaken;
 
-	public int getID() {
-		return id;
-	}
+    public User(String first, String last, String user, String pass) {
+        id = 0;
+        firstName = first;
+        lastName = last;
+        username = user;
+        password = pass;
+        permissionLevel = PermissionLevel.NONE;
+        testsTaken = new ArrayList<>();
+    }
 
-	public void setID(int id) {
-		this.id = id;
-	}
+    // ID
+    public int getID() {
+        return id;
+    }
 
-	public String getFirstName() {
-		return firstName;
-	}
+    public void setID(int id) {
+        this.id = id;
+    }
 
-	public void setFirstName(String first) {
-		firstName = first;
-	}
+    // Name
+    public String getFirstName() {
+        return firstName;
+    }
 
-	public String getLastName() {
-		return lastName;
-	}
+    public void setFirstName(String first) {
+        firstName = first;
+    }
 
-	public void setLastName(String last) {
-		lastName = last;
-	}
+    public String getLastName() {
+        return lastName;
+    }
 
-	public String getFullName() {
-		return firstName + " " + lastName;
-	}
+    public void setLastName(String last) {
+        lastName = last;
+    }
 
-	public String getUsername() {
-		return username;
-	}
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
 
-	public void setUsername(String user) {
-		username = user;
-	}
+    // Account credentials
+    public String getUsername() {
+        return username;
+    }
 
-	public String getPassword() {
-		return password;
-	}
+    public void setUsername(String user) {
+        username = user;
+    }
 
-	public void setPassword(String pass) {
-		password = pass;
-	}
+    public String getPassword() {
+        return password;
+    }
 
-	public PermissionLevel getPermissionLevel() {
-		return permissionLevel;
-	}
+    public void setPassword(String pass) {
+        password = pass;
+    }
 
-	public void setPermissionLevel(PermissionLevel level) {
-		permissionLevel = level;
-	}
+    // Permissions
+    public PermissionLevel getPermissionLevel() {
+        return permissionLevel;
+    }
 
-	public int[] getTestsTaken() {
-		return testsTaken;
-	}
+    public void setPermissionLevel(PermissionLevel level) {
+        permissionLevel = level;
+    }
 
-	public void setTestsTaken(int[] tests) {
-		testsTaken = tests;
-	}
+    // Test history
+    public ArrayList<Integer> getTestsTaken() {
+		// new ArrayList to prevent accidental modification of the existing one
+        return new ArrayList<>(testsTaken);
+    }
+
+    public void addTestTaken(int testID) {
+        if (!testsTaken.contains(testID)) {
+            testsTaken.add(testID);
+        }
+    }
+
+    public void removeTestTaken(int testID) {
+        testsTaken.remove(Integer.valueOf(testID));
+    }
+
+    public boolean hasTakenTest(int testID) {
+        return testsTaken.contains(testID);
+    }
 }
