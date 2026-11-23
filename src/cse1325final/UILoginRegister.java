@@ -9,6 +9,7 @@ import java.lang.reflect.Field;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+import cse1325final.Backend.DuplicateUsernameException;
 import cse1325final.Backend.InvalidAuthorizationException;
 import cse1325final.Backend.InvalidPermissionsException;
 import cse1325final.Backend.PasswordLengthException;
@@ -157,7 +158,7 @@ public class UILoginRegister extends JDialog {
 			PermissionLevel perms = this.getCurrentLevel();
 			try {
 				Frontend.backend.register(this.usernameField.getText(), this.passwordField.getText(), "Alpha", "Beta", perms, this.authField.getText());
-			} catch (PasswordLengthException | UsernameLengthException | InvalidPermissionsException
+			} catch (PasswordLengthException | UsernameLengthException | DuplicateUsernameException | InvalidPermissionsException
 					| InvalidAuthorizationException e) {
 				e.printStackTrace();
 				this.displayFeedback(e.getMessage(), FeedbackType.ERROR);
