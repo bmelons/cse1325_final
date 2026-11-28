@@ -3,10 +3,11 @@ package cse1325final;
 import java.util.ArrayList;
 
 public class Backend {
-    private static final DataManager dataManager = new DataManager();
+    private static final DataManager dataManager = new DataManager(false,false);
 
     // Only one user can be logged in at a time
     private static User currentUser;
+    private static Frontend frontend;
 
     // Account restrictions
     private static final int PASSWORD_MINIMUM_LENGTH = 3;
@@ -96,18 +97,19 @@ public class Backend {
         }
 
         currentUser = user;
+        Frontend.updateLoginStatus();
         return true;
     }
 
-    public void logout() {
+    public static void logout() {
         currentUser = null;
     }
 
-    public User getCurrentUser() {
+    public static User getCurrentUser() {
         return currentUser;
     }
 
-    public boolean isLoggedIn() {
+    public static boolean isLoggedIn() {
         return currentUser != null;
     }
 	
@@ -216,6 +218,14 @@ public class Backend {
         return highestID + 1;
     }
 	
+    public static String getAuthorName(int authorID) {
+    	User user = dataManager.getUser(authorID);
+    	if (user == null) {
+    		return "Unknown User";
+    	}
+    	return user.getFullName();
+    }
+    
 	// Test creation
     public Test createTest(String name) throws InvalidPermissionsException, InvalidTestException {
         requirePermission(PermissionLevel.EDUCATOR);
@@ -290,9 +300,16 @@ public class Backend {
     public Test getTest(String name) {
         return dataManager.getTest(name);
     }
+    
+    public TestRecord getRecord(Test test, int userID) {
+    	for (TestRecord record : test.getResults()) {
+    		if (record.getUserId() == userID) return record;
+    	}
+    	return null;
+    }
 	
 	// Test submission
-    public TestRecord submitTest(int testID, ArrayList<Object> answers)
+    public TestRecord submitTest(int testID, ArrayList<Integer> answers)
             throws InvalidPermissionsException,
                    InvalidTestException,
                    IncompatibleRecordException
@@ -319,8 +336,34 @@ public class Backend {
         );
 
         dataManager.addTestRecord(record);
+       
 
         return record;
+    }
+    public void submitTest(TestRecord record)
+            throws InvalidPermissionsException,
+                   InvalidTestException,
+                   IncompatibleRecordException
+	{
+        requirePermission(PermissionLevel.STUDENT);
+
+        Test test = dataManager.getTest(record.getTestId());
+        ArrayList<Integer> answers = record.getAnswers();
+
+        if (test == null) {
+            throw new InvalidTestException("Test not found.");
+        }
+
+        if (record.getAnswers() == null) {
+            throw new InvalidTestException("Answers cannot be null.");
+        }
+
+        double score = calculateScore(answers, test);
+        record.setScore(score);
+
+        dataManager.addTestRecord(record);
+
+        return;
     }
 
 	// Grading
@@ -332,7 +375,7 @@ public class Backend {
         return calculateScore(record.getAnswers(), test);
     }
 
-    public double calculateScore(ArrayList<Object> answers, Test test) throws IncompatibleRecordException {
+    public double calculateScore(ArrayList<Integer> answers, Test test) throws IncompatibleRecordException {
         if (test == null || answers == null) {
             throw new IllegalArgumentException("Test and answers cannot be null.");
         }
@@ -380,4 +423,6 @@ public class Backend {
             }
         }
     }
+    
+
 }

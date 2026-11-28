@@ -17,6 +17,13 @@ public class TestQuestion {
 			? new ArrayList<>(options)
 			: new ArrayList<>();
     }
+    public TestQuestion(String question, QuestionType questionType, int answer) {
+        this.question = question;
+        this.questionType = questionType;
+        this.answer = answer;
+
+		this.options = new ArrayList<>();
+    }
 
     // Question
     public String getQuestion() {

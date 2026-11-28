@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class TestRecord {
     private int userId;
     private int testId;
-    private ArrayList<Object> answers;
+    private ArrayList<Integer> answers; // can i migrate this back to a primitive array, it's a static length and works easier with null values
     private double score; // a percentage; from 0.0 to 1.0
 
     public TestRecord() {
@@ -15,13 +15,13 @@ public class TestRecord {
         score = 0.0;
     }
 
-    public TestRecord(int userId, int testId, ArrayList<Object> answers, double score) {
+    public TestRecord(int userId, int testId, ArrayList<Integer> answers, double score) {
         this.userId = userId;
         this.testId = testId;
         this.answers = answers != null
 			? new ArrayList<>(answers)
 			: new ArrayList<>();
-        this.score = score;
+        this.score = score; 
     }
 
     // Student ID
@@ -43,14 +43,22 @@ public class TestRecord {
     }
 
     // Submitted answers
-    public ArrayList<Object> getAnswers() {
+    public ArrayList<Integer> getAnswers() {
         return new ArrayList<>(answers);
     }
 
-    public void setAnswers(ArrayList<Object> answers) {
+    public void setAnswers(ArrayList<Integer> answers) {
         this.answers = answers != null
                 ? new ArrayList<>(answers)
                 : new ArrayList<>();
+    }
+    
+    public Object getAnswer(int index) {
+    	return this.answers.get(index);
+    }
+    
+    public void setAnswer(int index, Integer answer) {
+    	this.answers.set(index,answer);
     }
 
     // Score

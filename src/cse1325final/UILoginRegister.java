@@ -20,7 +20,7 @@ public class UILoginRegister extends JDialog {
 	private JLabel prompt;
 	
 	private static final int ROW_COUNT = 7;
-	private static final Dimension WINDOW_SIZE = new Dimension(450,350);
+	private static final Dimension WINDOW_SIZE = new Dimension(500,350);
 	
 	private boolean isEduMode;
 	
@@ -28,11 +28,18 @@ public class UILoginRegister extends JDialog {
 	private ButtonGroup permissionRadioGroup;
 	private JRadioButton educatorRadio;
 	private JRadioButton studentRadio;
+	private UIFlowPanel namesRow;
 	private UIFlowPanel authRow;
 	private UIFlowPanel actionRow;
 	private JPanel[] rows;
 	
 	// data entry
+	JLabel firstNameLabel;
+	JTextField firstNameField;
+	
+	JLabel lastNameLabel;
+	JTextField lastNameField;
+	
 	JLabel usernameLabel;
 	JTextField usernameField;
 	
@@ -49,8 +56,7 @@ public class UILoginRegister extends JDialog {
 	
 	public UILoginRegister(JFrame parentFrame, boolean aisRegistry) {
 		super(parentFrame,makeTitle(aisRegistry),true);
-		this.setIsRegistry(aisRegistry);
-		this.isEduMode = false;
+		
 		
 		
 		// layout for this window is a box
@@ -87,7 +93,19 @@ public class UILoginRegister extends JDialog {
 		roleRow.add(eduRLabel);
 		roleRow.add(eduRadio);
 		
-		// TODO: add first/last name roles
+		this.namesRow = new UIFlowPanel();
+		this.firstNameLabel = new JLabel("First Name: ");
+		this.firstNameField = new JTextField(10);
+		this.lastNameLabel = new JLabel("Last Name: ");
+		this.lastNameField = new JTextField(10);
+		this.setIsRegistry(aisRegistry);
+		this.isEduMode = false;
+
+		this.namesRow.add(this.firstNameLabel);
+		this.namesRow.add(this.firstNameField);
+		this.namesRow.add(this.lastNameLabel);
+		this.namesRow.add(this.lastNameField);
+		
 		
 		UIFlowPanel unameRow = new UIFlowPanel();
 		this.usernameLabel = new JLabel("Username: ");
@@ -122,9 +140,10 @@ public class UILoginRegister extends JDialog {
 		
 		
 		rows[0].add(roleRow);
-		rows[1].add(unameRow);
-		rows[2].add(pwordRow);
-		rows[3].add(this.authRow);
+		rows[1].add(namesRow);
+		rows[2].add(unameRow);
+		rows[3].add(pwordRow);
+		rows[4].add(this.authRow);
 		rows[5].add(this.feedbackLabel);
 		rows[6].add(this.actionRow);
 		this.authRow.setVisible(isEduMode);
@@ -136,6 +155,9 @@ public class UILoginRegister extends JDialog {
 		setMaximumSize(WINDOW_SIZE);
 		setLocationRelativeTo(parentFrame);
 		setVisible(true);
+		
+		usernameField.grabFocus(); // intended to automatically has the user select the text box
+		
 //		add(this.usernameLabel);
 //		add(this.usernameField);
 //		
@@ -151,19 +173,44 @@ public class UILoginRegister extends JDialog {
 	public void setIsRegistry(boolean aisRegistry) {
 		this.isRegistry = aisRegistry;
 		this.setTitle(makeTitle(aisRegistry));
+		this.namesRow.setVisible(aisRegistry);
+	}
+	
+	public void register() {
+		PermissionLevel perms = this.getCurrentLevel();
+		User newUser = null;
+		System.out.println("making new user");
+		try {
+			newUser = Frontend.backend.register(
+					this.usernameField.getText(), 
+					this.passwordField.getText(), 
+					this.firstNameField.getText(), 
+					this.lastNameField.getText(), 
+					perms, 
+					this.authField.getText());
+		} catch (PasswordLengthException | UsernameLengthException | DuplicateUsernameException | InvalidPermissionsException
+				| IllegalArgumentException | InvalidAuthorizationException e) {
+			e.printStackTrace();
+			this.displayFeedback(e.getMessage(), FeedbackType.ERROR);
+		}
+		if (newUser != null) {
+			this.displayFeedback(newUser.getFullName() + " is registered", FeedbackType.INFO);
+		}
+	}
+	
+	public void login() {
+		if (Frontend.backend.login(this.usernameField.getText(), this.passwordField.getText())) {
+			this.dispose();
+		}
+		else {
+			this.displayFeedback("Either username or password is wrong", FeedbackType.ERROR);
+		}
 	}
 	
 	public void submit() {
-		if (this.isRegistry) {
-			PermissionLevel perms = this.getCurrentLevel();
-			try {
-				Frontend.backend.register(this.usernameField.getText(), this.passwordField.getText(), "Alpha", "Beta", perms, this.authField.getText());
-			} catch (PasswordLengthException | UsernameLengthException | DuplicateUsernameException | InvalidPermissionsException
-					| InvalidAuthorizationException e) {
-				e.printStackTrace();
-				this.displayFeedback(e.getMessage(), FeedbackType.ERROR);
-			}
-		}
+		System.out.println("submitting");
+		if (this.isRegistry) register();
+		else login();
 	}
 	
 	public PermissionLevel getCurrentLevel() {

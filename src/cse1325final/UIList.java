@@ -79,7 +79,7 @@ public class UIList extends JPanel {
 	public void onSelected() {
 		int getSelection = this.table.getSelectedRow(); // index starts at 0 like arrays
 		System.out.println("Item " + getSelection + " selected");
-		
+		Frontend.openTest(Frontend.getListedTests().get(getSelection) );
 		return;
 		
 	}
@@ -101,6 +101,7 @@ public class UIList extends JPanel {
 	public void setColumns(String[] aColumns) {
 		this.columns = aColumns;
 		this.columnModel.setColumnCount(0);
+		this.columnModel.setRowCount(0);
 		for (String column : this.columns) {
 			columnModel.addColumn(column);
 		}	
@@ -109,6 +110,11 @@ public class UIList extends JPanel {
 	public void addRow(Object[] rowData) {
 		this.columnModel.addRow(rowData);
 		return;
+	}
+	
+	public void setTitle(String aTitle) {
+		this.title = aTitle;
+		this.titleLabel.setText(aTitle);
 	}
 
 }

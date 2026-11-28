@@ -1,16 +1,20 @@
 package cse1325final;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.awt.List;
 import java.io.*;
 
 public class DataManager {
     // File locations
     private static final String USER_FILE = "users.txt";
     private static final String TEST_FILE = "tests.txt";
+    
 
     // Stored data
     private ArrayList<User> users;
     private ArrayList<Test> tests;
+    private boolean isUsingPlaceholders; // prevents saving to files
 
     public DataManager() {
         users = new ArrayList<>();
@@ -18,6 +22,27 @@ public class DataManager {
 
         importUsers();
         importTests();
+        this.isUsingPlaceholders = false;
+    }
+    
+ 
+    public DataManager(boolean usePlaceholderTestData,boolean usePlaceholderUserData) {
+    	this.isUsingPlaceholders = usePlaceholderTestData || usePlaceholderUserData;
+    	if (usePlaceholderTestData) {
+    		tests = PlaceholderData.getTests();
+    	}
+    	else {
+    		tests = new ArrayList<>();
+    		importTests();
+		}
+    	
+    	if (usePlaceholderUserData) {
+    		users = PlaceholderData.getUsers();
+    	}
+    	else {
+    		users = new ArrayList<>();
+    		importUsers();
+		}  
     }
 	
 	// User management
@@ -68,6 +93,7 @@ public class DataManager {
             test.setResults(results);
         }
 
+        
         saveUserData();
         saveTestData();
 
@@ -152,6 +178,7 @@ public class DataManager {
 
         test.addResult(record);
         user.addTestTaken(record.getTestId());
+        System.out.println(user.toString());
 
         saveUserData();
         saveTestData();

@@ -101,4 +101,12 @@ public class User {
     public boolean hasTakenTest(int testID) {
         return testsTaken.contains(testID);
     }
+    
+    @Override
+    public String toString() {
+    	
+    	return this.getUsername() + " (" + this.getFullName() + ")\n" 
+    	+ getID() + "\n"
+    	+ testsTaken.toString();
+    }
 }
